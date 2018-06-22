@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -44,18 +43,11 @@ func (g *Generator) makeFile(fi FileInfo, number int) {
 	}
 	defer file.Close()
 
-	if fi.MaxSize < fi.MinSize {
-		fi.MaxSize = fi.MinSize
+	if fi.Size <= 0 {
+		fi.Size = cDefaultSize
 	}
 
-	sizeDiff := fi.MaxSize - fi.MinSize
-	delta := 0
-	if sizeDiff > 0 {
-		delta = rand.Intn(sizeDiff)
-	}
-	size := fi.MinSize + delta
-
-	file.WriteString(strings.Repeat("test data", size/len("test data")))
+	file.WriteString(strings.Repeat("test data", fi.Size/len("test data")))
 
 	var aTime time.Time
 	if fi.ATime != "" {
