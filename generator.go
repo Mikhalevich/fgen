@@ -22,7 +22,7 @@ type Generator struct {
 func NewGenerator(p *Params) *Generator {
 	return &Generator{
 		params:   p,
-		Notifier: make(chan int64),
+		Notifier: make(chan int64, 1000),
 	}
 }
 
