@@ -22,7 +22,7 @@ type Generator struct {
 func NewGenerator(p *Params) *Generator {
 	return &Generator{
 		params:   p,
-		Notifier: make(chan int64, 1000),
+		Notifier: make(chan int64, 100),
 	}
 }
 
@@ -36,7 +36,7 @@ func (g *Generator) Start() []error {
 	}
 	g.Notifier <- totalFiles
 
-	fileJob := jober.NewWorkerPool(jober.NewAll(), 1000)
+	fileJob := jober.NewWorkerPool(jober.NewAll(), 100)
 
 	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {
