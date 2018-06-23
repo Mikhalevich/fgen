@@ -13,21 +13,28 @@ const (
 )
 
 type Generator struct {
-	params *Params
+	params   *Params
+	Notifier chan int64
 }
 
 func NewGenerator(p *Params) *Generator {
 	return &Generator{
-		params: p,
+		params:   p,
+		Notifier: make(chan int64),
 	}
 }
 
 func (g *Generator) Start() {
+	var totalFiles int64 = 0
 	for _, fi := range g.params.Files {
 		if fi.Count <= 0 {
 			fi.Count = 1
 		}
+		totalFiles += int64(fi.Count)
+	}
+	g.Notifier <- totalFiles
 
+	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {
 			path, err := g.makeFile(fi, i)
 			if err != nil {
@@ -39,6 +46,8 @@ func (g *Generator) Start() {
 			if err != nil {
 				fmt.Println(err)
 			}
+
+			g.Notifier <- 1
 		}
 	}
 }

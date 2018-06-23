@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Mikhalevich/argparser"
+	"gopkg.in/cheggaaa/pb.v1"
 )
 
 type Params struct {
@@ -58,6 +59,20 @@ func loadParams() (*Params, error) {
 	return params, err
 }
 
+func showProgress(c chan int64) {
+	go func() {
+		content := <-c
+
+		bar := pb.New64(content)
+		bar.Start()
+
+		for chunk := range c {
+			bar.Add64(chunk)
+		}
+		bar.Finish()
+	}()
+}
+
 func main() {
 	startTime := time.Now()
 
@@ -68,6 +83,7 @@ func main() {
 	}
 
 	g := NewGenerator(params)
+	showProgress(g.Notifier)
 	g.Start()
 
 	fmt.Printf("Execution time = %v\n", time.Now().Sub(startTime))
