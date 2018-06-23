@@ -15,6 +15,7 @@ type Params struct {
 
 type FileInfo struct {
 	Prefix string `json:"prefix"`
+	Suffix string `json:"suffix, omitempty"`
 	ATime  string `json:"atime, omitempty"`
 	MTime  string `json:"mtime, omitempty"`
 	Size   int    `json:"size"`
@@ -26,6 +27,7 @@ func NewParams() *Params {
 		Root: ".",
 		Files: []FileInfo{FileInfo{
 			Prefix: "testFile",
+			Suffix: "tst",
 			ATime:  time.Now().Format(time.RFC3339),
 			MTime:  time.Now().Format(time.RFC3339),
 			Size:   1024 * 1024,
