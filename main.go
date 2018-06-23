@@ -84,7 +84,14 @@ func main() {
 
 	g := NewGenerator(params)
 	showProgress(g.Notifier)
-	g.Start()
+	errs := g.Start()
+
+	if len(errs) > 0 {
+		fmt.Println("Errors:")
+		for _, err := range errs {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}
 
 	fmt.Printf("Execution time = %v\n", time.Now().Sub(startTime))
 }

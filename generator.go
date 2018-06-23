@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/Mikhalevich/jober"
 )
 
 const (
@@ -24,7 +26,7 @@ func NewGenerator(p *Params) *Generator {
 	}
 }
 
-func (g *Generator) Start() {
+func (g *Generator) Start() []error {
 	var totalFiles int64 = 0
 	for _, fi := range g.params.Files {
 		if fi.Count <= 0 {
@@ -34,22 +36,34 @@ func (g *Generator) Start() {
 	}
 	g.Notifier <- totalFiles
 
+	fileJob := jober.NewWorkerPool(jober.NewAll(), 1000)
+
 	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {
-			path, err := g.makeFile(fi, i)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
 
-			err = g.changeTimes(path, fi)
-			if err != nil {
-				fmt.Println(err)
-			}
+			workerFunc := func() (interface{}, error) {
+				path, err := g.makeFile(fi, i)
+				if err != nil {
+					return nil, err
+				}
 
-			g.Notifier <- 1
+				err = g.changeTimes(path, fi)
+				if err != nil {
+					return nil, err
+				}
+
+				g.Notifier <- 1
+
+				return nil, nil
+			}
+			fileJob.Add(workerFunc)
 		}
 	}
+
+	fileJob.Wait()
+
+	_, errs := fileJob.Get()
+	return errs
 }
 
 func (g *Generator) makeFile(fi FileInfo, number int) (string, error) {
