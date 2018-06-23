@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	cDefaultSize = 4 * 1024
+	cDefaultSize    = 4 * 1024
+	cDefaulfWorkers = 100
 )
 
 type Generator struct {
@@ -20,9 +21,12 @@ type Generator struct {
 }
 
 func NewGenerator(p *Params) *Generator {
+	if p.Workers <= 0 {
+		p.Workers = cDefaulfWorkers
+	}
 	return &Generator{
 		params:   p,
-		Notifier: make(chan int64, 100),
+		Notifier: make(chan int64, p.Workers),
 	}
 }
 
@@ -36,7 +40,7 @@ func (g *Generator) Start() []error {
 	}
 	g.Notifier <- totalFiles
 
-	fileJob := jober.NewWorkerPool(jober.NewAll(), 100)
+	fileJob := jober.NewWorkerPool(jober.NewAll(), g.params.Workers)
 
 	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {

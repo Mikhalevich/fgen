@@ -10,8 +10,9 @@ import (
 )
 
 type Params struct {
-	Root  string     `json:"root, omitempty"`
-	Files []FileInfo `json:"files"`
+	Root    string     `json:"root, omitempty"`
+	Workers int        `json:"workers, omitempty"`
+	Files   []FileInfo `json:"files"`
 }
 
 type FileInfo struct {
@@ -25,7 +26,8 @@ type FileInfo struct {
 
 func NewParams() *Params {
 	return &Params{
-		Root: ".",
+		Root:    ".",
+		Workers: 100,
 		Files: []FileInfo{FileInfo{
 			Prefix: "testFile",
 			Suffix: "tst",
