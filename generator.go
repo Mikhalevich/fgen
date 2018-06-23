@@ -40,9 +40,9 @@ func (g *Generator) Start() []error {
 
 	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {
-
+			index := i
 			workerFunc := func() (interface{}, error) {
-				path, err := g.makeFile(fi, i)
+				path, err := g.makeFile(fi, index)
 				if err != nil {
 					return nil, err
 				}
