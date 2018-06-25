@@ -95,5 +95,9 @@ func main() {
 		}
 	}
 
-	fmt.Printf("Execution time = %v\n", time.Now().Sub(startTime))
+	executionTime := time.Now().Sub(startTime)
+
+	time.Sleep(1 * time.Second) // wait for progress bar
+
+	fmt.Printf("Execution time = %v\n", executionTime)
 }
