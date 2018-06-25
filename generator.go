@@ -45,13 +45,14 @@ func (g *Generator) Start() []error {
 	for _, fi := range g.params.Files {
 		for i := 0; i < fi.Count; i++ {
 			index := i
+			info := fi
 			workerFunc := func() (interface{}, error) {
-				path, err := g.makeFile(fi, index)
+				path, err := g.makeFile(info, index)
 				if err != nil {
 					return nil, err
 				}
 
-				err = g.changeTimes(path, fi)
+				err = g.changeTimes(path, info)
 				if err != nil {
 					return nil, err
 				}
